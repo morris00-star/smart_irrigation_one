@@ -1,0 +1,60 @@
+{% extends 'irrigation/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="relative min-h-screen flex flex-col bg-green-10">
+    <!-- Hero Section with Background -->
+    <div class="relative bg-green-600 text-white py-12 px-4">
+        <!-- Background image -->
+    <div class="absolute inset-0 z-0">
+        <img src="{% static 'irrigation/images/irrigation_system_view.png' %}" alt="Background" class="w-full h-full object-cover">
+        <div class="absolute inset-0 bg-black opacity-50"></div>
+    </div>
+
+        <!-- Content -->
+        <div class="relative z-10 text-center text-white container mx-auto px-4">
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">Welcome to Intelligent Irrigation System</h1>
+            <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">Revolutionizing agriculture with smart technology that saves water, time, and resources while maximizing crop yield.</p>
+
+            {% if user.is_authenticated %}
+                <p class="text-2xl mb-8">Welcome back, {{ user.username }}!</p>
+                <a href="{% url 'dashboard' %}" class="inline-block bg-white text-green-700 hover:bg-green-50 px-8 py-3 rounded-lg text-lg font-semibold transition duration-300 transform hover:scale-105 shadow-lg">
+                    Go to Dashboard <i class="ml-2 fas fa-arrow-right"></i>
+                </a>
+            {% else %}
+                <p class="text-xl mb-8">Please log in or register to access your account.</p>
+                <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6">
+                    <a href="{% url 'login' %}" class="inline-block bg-green-500 hover:bg-green-600 text-white px-8 py-4 rounded-lg text-xl font-semibold transition duration-300 transform hover:scale-105 shadow-lg">
+                        Login <i class="ml-2 fas fa-sign-in-alt"></i>
+                    </a>
+                    <a href="{% url 'register' %}" class="inline-block bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 rounded-lg text-xl font-semibold transition duration-300 transform hover:scale-105 shadow-lg">
+                        Register <i class="ml-2 fas fa-user-plus"></i>
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Smooth scrolling */
+    html {
+        scroll-behavior: smooth;
+    }
+
+    /* Custom animations */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate-fade-in {
+        animation: fadeIn 1s ease-out;
+    }
+
+    /* Gradient background for hero section */
+    .hero-gradient {
+        background: linear-gradient(135deg, #065f46 0%, #047857 100%);
+    }
+</style>
+{% endblock %}

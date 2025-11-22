@@ -1,0 +1,1474 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <link rel="manifest" href="{% url 'manifest' %}">
+    <!-- Favicon -->
+    <link rel="icon" href="{% url 'favicon' %}" type="image/x-icon">
+    <link rel="shortcut icon" href="{% url 'favicon' %}" type="image/x-icon">
+
+    <!-- SVG icon for modern browsers -->
+    <link rel="icon" href="{% static 'irrigation/images/icon.svg' %}" type="image/svg+xml">
+
+    <meta name="description" content="Intelligent Irrigation System for smart water management">
+    <meta name="theme-color" content="#059669">
+
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="IrrigationSystem">
+    <link rel="apple-touch-icon" href="{% static 'irrigation/images/icon-192x192.png' %}">
+
+    <meta name="msapplication-TileImage" content="{% static 'irrigation/images/icon-192x192.png' %}">
+    <meta name="msapplication-TileColor" content="#10b981">
+
+    <title>{% block title %}Intelligent Irrigation System{% endblock %}</title>
+
+    <!-- Preload critical resources -->
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" as="style">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" as="style">
+
+    <!-- CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Favicons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" href="{% url 'favicon' %}" type="image/x-icon">
+    <link rel="shortcut icon" href="{% url 'favicon' %}" type="image/x-icon">
+    <link rel="manifest" href="{% url 'manifest' %}">
+
+    <style>
+        :root {
+            --primary: #059669;
+            --primary-dark: #047857;
+            --primary-light: #a7f3d0;
+            --danger: #dc2626;
+            --warning: #d97706;
+            --text-dark: #333333;
+            --text-light: #f8fafc;
+            --gradient-start: #059669;
+            --gradient-end: #047857;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        @keyframes pulse-emergency {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 0 0 10px rgba(220, 38, 38, 0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200px 0; }
+            100% { background-position: calc(200px + 100%) 0; }
+        }
+
+        .emergency-pulse {
+            animation: pulse-emergency 1.5s infinite;
+        }
+
+        .emergency-flash {
+            animation: pulse 1s infinite;
+        }
+
+        .connection-pulse {
+            animation: pulse 2s infinite;
+        }
+
+        .float-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* Smooth transitions */
+        .transition-all {
+            transition-property: all;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 300ms;
+        }
+
+        /* Focus styles */
+        .focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        /* Base styles to ensure text visibility */
+        body {
+            color: var(--text-dark);
+            background-color: #f8fafc;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        /* Card styling */
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Button styling */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-dark), #03644d);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(5, 150, 105, 0.3);
+        }
+
+        /* Glass morphism effect */
+        .glass {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        /* Custom scrollbar */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Loading shimmer effect */
+        .shimmer {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200px 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 4px;
+        }
+
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --primary: #10b981;
+                --primary-dark: #059669;
+                --text-dark: #f8fafc;
+            }
+
+            body {
+                background-color: #111827;
+                color: #f3f4f6;
+            }
+
+            .card {
+                background-color: #1f2937;
+                color: #f3f4f6;
+            }
+
+            .bg-gray-100 {
+                background-color: #1f2937;
+            }
+        }
+
+        /* Chatbot styles */
+        #chatbot-container {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            width: 350px;
+            height: 450px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+            transform: translateY(20px);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        #chatbot-container.chatbot-visible {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .chatbot-header {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            color: white;
+            padding: 12px 16px;
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move;
+        }
+
+        #chatbot-history {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            background: #f8fafc;
+        }
+
+        #chatbot-form {
+            padding: 12px 16px;
+            border-top: 1px solid #e5e7eb;
+            background: white;
+            border-bottom-left-radius: 16px;
+            border-bottom-right-radius: 16px;
+        }
+
+        .user-msg, .bot-msg {
+            margin-bottom: 12px;
+            padding: 10px 14px;
+            border-radius: 18px;
+            max-width: 80%;
+            line-height: 1.4;
+            position: relative;
+        }
+
+        .user-msg {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 6px;
+        }
+
+        .bot-msg {
+            background: #e5e7eb;
+            color: var(--text-dark);
+            border-bottom-left-radius: 6px;
+        }
+
+        .bot-msg.error {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .message-time {
+            font-size: 0.7rem;
+            opacity: 0.7;
+            margin-top: 4px;
+        }
+
+        .chatbot-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.4);
+            cursor: pointer;
+            z-index: 999;
+            transition: all 0.3s ease;
+        }
+
+        .chatbot-button:hover {
+            transform: scale(1.05) rotate(5deg);
+            box-shadow: 0 6px 16px rgba(5, 150, 105, 0.5);
+        }
+
+        #chat-notification {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 20px;
+            height: 20px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        /* Typing Indicator */
+        #typing-indicator {
+            padding: 0 12px 10px;
+            height: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .typing-hidden {
+            opacity: 0;
+            height: 0;
+            padding: 0;
+        }
+
+        .typing-dots {
+            display: inline-flex;
+            gap: 5px;
+        }
+
+        .typing-dots span {
+            width: 8px;
+            height: 8px;
+            background: #94a3b8;
+            border-radius: 50%;
+            display: inline-block;
+            animation: typing-animation 1.4s infinite both;
+        }
+
+        .typing-dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing-animation {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        /* Mobile optimizations */
+        @media (max-width: 640px) {
+            #chatbot-container {
+                bottom: 80px;
+                height: 65vh;
+                width: 90vw;
+                right: 5vw;
+                left: auto;
+                max-width: none;
+            }
+
+            .chatbot-button {
+                bottom: 20px;
+                right: 20px;
+                width: 60px;
+                height: 60px;
+            }
+
+            .user-msg, .bot-msg {
+                max-width: 90%;
+                font-size: 0.85rem;
+                padding: 8px 12px;
+            }
+
+            #chatbot-form input {
+                padding: 8px 14px;
+                font-size: 0.85rem;
+            }
+
+            /* Footer adjustments */
+            footer {
+                padding: 1.5rem 1rem;
+            }
+
+            footer .footer-links {
+                flex-direction: column;
+                gap: 0.5rem;
+                align-items: center;
+                margin-top: 0.5rem;
+            }
+
+            /* Mobile menu improvements */
+            #mobileMenu {
+                max-height: 0;
+                transition: max-height 0.3s ease-out;
+                overflow: hidden;
+            }
+
+            #mobileMenu.mobile-menu-open {
+                max-height: 500px;
+                transition: max-height 0.5s ease-in;
+            }
+        }
+
+        /* Enhanced mobile visibility for chatbot */
+        @media (max-width: 480px) {
+            #chatbot-container {
+                height: 70vh;
+                bottom: 75px;
+            }
+
+            .chatbot-button {
+                bottom: 15px;
+                right: 15px;
+                width: 56px;
+                height: 56px;
+            }
+
+            .chatbot-header h3 {
+                font-size: 0.9rem;
+            }
+
+            #chatbot-history {
+                padding: 10px;
+            }
+
+            #chatbot-form {
+                padding: 10px;
+            }
+        }
+
+        /* Footer styling */
+        footer {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            color: white;
+            padding: 1.5rem 2rem;
+        }
+
+        footer a {
+            color: white;
+            opacity: 0.9;
+            transition: opacity 0.2s;
+        }
+
+        footer a:hover {
+            opacity: 1;
+            text-decoration: underline;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .footer-copyright {
+            text-align: center;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        @media (min-width: 768px) {
+            .footer-content {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .footer-links {
+                justify-content: flex-end;
+            }
+        }
+
+        /* Ensure all interactive elements are clickable */
+        button, a, input, [role="button"] {
+            touch-action: manipulation;
+        }
+
+        /* Improved navigation */
+        .nav-link {
+            position: relative;
+            padding: 0.5rem 0;
+            transition: color 0.2s;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: white;
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        /* Water droplet animation for irrigation theme */
+        .water-drop {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .water-drop::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(45deg);
+            animation: water-shine 3s infinite;
+        }
+
+        @keyframes water-shine {
+            0% { transform: translateY(-100%) rotate(45deg); }
+            100% { transform: translateY(100%) rotate(45deg); }
+        }
+    </style>
+
+    {% block extra_head %}{% endblock %}
+</head>
+
+<body class="min-h-screen flex flex-col bg-gray-50">
+    <!-- Emergency Alert Banner -->
+    <div id="emergencyBanner" class="bg-red-600 text-white p-4 emergency-flash {% if not emergency_active %}hidden{% endif %}" role="alert" aria-live="assertive">
+        <div class="container mx-auto flex items-center justify-center">
+            <svg class="h-8 w-8 mr-3 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <div class="text-center">
+                <strong class="font-bold text-xl uppercase tracking-wider">Emergency Stop Activated</strong>
+                <p class="mt-1">All irrigation systems have been immediately shut down</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Navigation -->
+    <header class="bg-gradient-to-r from-green-600 to-green-700 shadow-lg">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-3 md:py-4">
+                <!-- Logo and Brand - Visible on all devices -->
+                <div class="flex items-center space-x-2">
+                    <a href="{% url 'home' %}" class="flex items-center space-x-2 water-drop p-2 rounded-lg" aria-label="Home">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 md:h-10 md:w-10 text-white float-animation" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                        <span class="text-l md:text-xl font-bold text-white"> Smart Irrigation System </span>
+                    </a>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <nav class="hidden md:flex space-x-6 ml-6">
+                    <a href="{% url 'dashboard' %}" class="nav-link text-white hover:text-green-200 font-medium transition-colors duration-200 flex items-center">
+                        <i class="fas fa-tachometer-alt mr-2"></i> Dashboard
+                    </a>
+                    <a href="{% url 'control-panel' %}" class="nav-link text-white hover:text-green-200 font-medium transition-colors duration-200 flex items-center">
+                        <i class="fas fa-sliders-h mr-2"></i> Control Panel
+                    </a>
+                    <a href="{% url 'visualize-data' %}" class="nav-link text-white hover:text-green-200 font-medium transition-colors duration-200 flex items-center">
+                        <i class="fas fa-chart-line mr-2"></i> Analytics
+                    </a>
+                    <a href="{% url 'help' %}" class="nav-link text-white hover:text-green-200 font-medium transition-colors duration-200 flex items-center">
+                        <i class="fas fa-question-circle mr-2"></i> Help
+                    </a>
+
+                    <a href="{% url 'notification_settings' %}" class="nav-link text-white hover:text-green-200 font-medium transition-colors duration-200 flex items-center">
+                        <i class="fas fa-bell"></i> Notifications
+                    </a>
+                    <a href="{% url 'contact' %}"  class="nav-link text-white hover:text-green-200 font-medium transition-colors duration-200 flex items-center">
+                    <i class="fas fa-envelope mr-2"></i> Contact
+                    </a>
+                    <a href="{% url 'about' %}"  class="nav-link text-white hover:text-green-200 font-medium transition-colors duration-200 flex items-center">
+                        <i class="fas fa-info-circle mr-2"></i> About
+                    </a>
+                </nav>
+
+                <!-- Right Side Controls -->
+                <div class="flex items-center space-x-4">
+                    <!-- Emergency Button - Visible on mobile when authenticated -->
+                    {% if user.is_authenticated %}
+                    <button id="emergencyToggleBtn"
+                            class="hidden md:flex items-center justify-center px-4 py-2 md:py-3 rounded-lg shadow-lg font-bold uppercase tracking-wide transition-all transform hover:scale-105 {% if emergency_active %}bg-green-600 hover:bg-green-700 emergency-pulse{% else %}bg-red-600 hover:bg-red-700{% endif %} border-2 border-white focus:outline-none focus:ring-4 focus:ring-red-300"
+                            aria-label="{% if emergency_active %}Reset emergency stop{% else %}Activate emergency stop{% endif %}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 md:h-6 md:w-6 mr-1 md:mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                        <span id="emergencyButtonText" class="text-sm md:text-base">
+                            {% if emergency_active %}Reset{% else %}Emergency{% endif %}
+                        </span>
+                    </button>
+                    {% endif %}
+
+                    <!-- User Menu -->
+                    <div class="relative">
+                        {% if user.is_authenticated %}
+                        <span class="text-white font-medium hidden sm:inline">{{ user.username }}</span>
+                        <div class="flex items-center space-x-2">
+                            <a href="{% url 'profile' %}" class="h-8 w-8 md:h-10 md:w-10 rounded-full bg-green-700 flex items-center justify-center text-white hover:bg-green-800 transition-colors shadow-md">
+                                <i class="fas fa-user text-sm md:text-base"></i>
+                            </a>
+                            <a href="{% url 'logout' %}" class="ml-1 md:ml-2 text-red-300 hover:text-white transition-colors">
+                                <i class="fas fa-sign-out-alt text-sm md:text-base"></i>
+                            </a>
+                        </div>
+                        {% else %}
+                        <div class="flex space-x-2">
+                            <a href="{% url 'login' %}" class="px-3 py-1 md:px-4 md:py-2 text-white hover:text-green-200 text-sm md:text-base rounded-lg transition-colors">Login</a>
+                            <a href="{% url 'register' %}" class="px-3 py-1 md:px-4 md:py-2 bg-white text-green-600 rounded-lg hover:bg-gray-100 text-sm md:text-base shadow-md transition-colors">Register</a>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Mobile Menu Button -->
+                    <button id="mobileMenuButton" class="md:hidden text-white focus:outline-none p-1 rounded-lg hover:bg-green-700 transition-colors" aria-label="Toggle menu">
+                        <svg class="h-6 w-6 md:h-8 md:w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="md:hidden bg-green-700 px-4 pb-4 mobile-menu-open">
+            <div class="flex flex-col space-y-3">
+                <a href="{% url 'dashboard' %}" class="text-white py-2 px-4 rounded-lg hover:bg-green-600 flex items-center transition-colors">
+                    <i class="fas fa-tachometer-alt mr-3"></i> Dashboard
+                </a>
+                <a href="{% url 'control-panel' %}" class="text-white py-2 px-4 rounded-lg hover:bg-green-600 flex items-center transition-colors">
+                    <i class="fas fa-sliders-h mr-3"></i> Control Panel
+                </a>
+                <a href="{% url 'visualize-data' %}" class="text-white py-2 px-4 rounded-lg hover:bg-green-600 flex items-center transition-colors">
+                    <i class="fas fa-chart-line mr-3"></i> Analytics
+                </a>
+                <a href="{% url 'help' %}" class="text-white py-2 px-4 rounded-lg hover:bg-green-600 flex items-center transition-colors">
+                    <i class="fas fa-question-circle mr-3"></i> Help
+                </a>
+                <a href="{% url 'notification_settings' %}" class="text-white py-2 px-4 rounded-lg hover:bg-green-600 flex items-center transition-colors">
+                    <i class="fas fa-bell mr-3"></i> Notifications
+                </a>
+                <a href="{% url 'contact' %}" class="text-white py-2 px-4 rounded-lg hover:bg-green-600 flex items-center transition-colors">
+                    <i class="fas fa-envelope mr-1"></i> Contact
+                </a>
+                <a href="{% url 'about' %}" class="text-white py-2 px-4 rounded-lg hover:bg-green-600 flex items-center transition-colors">
+                    <i class="fas fa-info-circle mr-1"></i> About
+                </a>
+
+                {% if user.is_authenticated %}
+                    <!-- Mobile Emergency Button -->
+                    <button id="mobileEmergencyToggleBtn"
+                            class="w-full flex items-center justify-center py-2 px-4 rounded-lg font-bold uppercase tracking-wide text-sm {% if emergency_active %}bg-green-600 hover:bg-green-700 emergency-pulse{% else %}bg-red-600 hover:bg-red-700{% endif %} border-2 border-white focus:outline-none transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                        <span id="mobileEmergencyButtonText">
+                            {% if emergency_active %}Reset Emergency{% else %}Emergency Stop{% endif %}
+                        </span>
+                    </button>
+
+                    <div class="flex items-center justify-between pt-2 border-t border-green-500">
+                        <span class="text-white font-medium">{{ user.username }}</span>
+                        <div class="flex space-x-2">
+                            <a href="{% url 'profile' %}" class="h-8 w-8 rounded-full bg-green-700 flex items-center justify-center text-white hover:bg-green-800 transition-colors shadow-md">
+                                <i class="fas fa-user"></i>
+                            </a>
+                            <a href="{% url 'logout' %}" class="h-8 w-8 rounded-full bg-red-600 flex items-center justify-center text-white hover:bg-red-700 transition-colors shadow-md">
+                                <i class="fas fa-sign-out-alt"></i>
+                            </a>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="flex space-x-2 pt-2 border-t border-green-500">
+                        <a href="{% url 'login' %}" class="flex-1 text-center py-2 px-4 bg-green-600 text-white rounded-lg hover:bg-green-500 text-sm transition-colors">Login</a>
+                        <a href="{% url 'register' %}" class="flex-1 text-center py-2 px-4 bg-white text-green-600 rounded-lg hover:bg-gray-100 text-sm transition-colors">Register</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow container mx-auto px-4 py-6 md:py-8">
+        <!-- Messages/Alerts -->
+        {% if messages %}
+            <div class="messages mb-6 md:mb-8 space-y-3">
+                {% for message in messages %}
+                    <div class="relative bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg shadow-sm card" role="alert">
+                        <button class="absolute top-2 right-2 text-green-500 hover:text-green-700 focus:outline-none transition-colors">
+                            <i class="fas fa-times"></i>
+                        </button>
+                        <div class="flex items-center">
+                            <i class="fas fa-check-circle mr-3"></i>
+                            <span>{{ message }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Page Content -->
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Footer - Now properly visible -->
+    <footer class="bg-gradient-to-r from-green-800 to-green-800 text-white">
+        <div class="container mx-auto px-4 py-6">
+            <div class="footer-content">
+                <div class="footer-copyright">
+                    &copy; {% now "Y" %} Smart Irrigation System. All rights reserved.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+    <!-- Emergency Confirmation Modal -->
+    <div id="emergencyModal" class="fixed z-50 inset-0 overflow-y-auto hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <!-- Background overlay -->
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+
+            <!-- Modal content -->
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full card">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full {% if emergency_active %}bg-green-100 text-green-600{% else %}bg-red-100 text-red-600{% endif %} sm:mx-0 sm:h-10 sm:w-10">
+                            <i class="fas {% if emergency_active %}fa-check-circle{% else %}fa-exclamation-triangle{% endif %}"></i>
+                        </div>
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900" id="emergencyModalTitle">
+                                {% if emergency_active %}Reset Emergency Stop{% else %}Activate Emergency Stop{% endif %}
+                            </h3>
+                            <div class="mt-2">
+                                <p class="text-sm text-gray-500" id="emergencyModalMessage">
+                                    {% if emergency_active %}
+                                        This will restore normal irrigation system operations.
+                                    {% else %}
+                                        This will immediately shut down all irrigation systems. Only use in case of emergency!
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button type="button" id="emergencyConfirmBtn" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white {% if emergency_active %}bg-green-600 hover:bg-green-700 focus:ring-green-500{% else %}bg-red-600 hover:bg-red-700 focus:ring-red-500{% endif %} focus:outline-none focus:ring-2 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm transition-colors">
+                        {% if emergency_active %}Confirm Reset{% else %}Confirm Emergency Stop{% endif %}
+                    </button>
+                    <button type="button" onclick="hideEmergencyModal()" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition-colors">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white p-6 rounded-lg shadow-xl flex flex-col items-center card">
+            <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-600 mb-4"></div>
+            <p class="text-gray-700">Processing...</p>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu toggle
+            document.getElementById('mobileMenuButton').addEventListener('click', function() {
+                const mobileMenu = document.getElementById('mobileMenu');
+                mobileMenu.classList.toggle('mobile-menu-open');
+                this.setAttribute('aria-expanded', mobileMenu.classList.contains('mobile-menu-open') ? 'true' : 'false');
+
+                // Animate hamburger icon
+                this.classList.toggle('active');
+            });
+
+            // Emergency button handlers
+            function setupEmergencyButton(buttonId) {
+                const button = document.getElementById(buttonId);
+                if (button) {
+                    button.addEventListener('click', function() {
+                        const isEmergencyActive = document.querySelector('#emergencyModal h3').textContent.includes('Reset');
+                        showEmergencyModal(isEmergencyActive);
+                    });
+                }
+            }
+
+            setupEmergencyButton('emergencyToggleBtn');
+            setupEmergencyButton('mobileEmergencyToggleBtn');
+
+            // Modal confirm button
+            document.getElementById('emergencyConfirmBtn').addEventListener('click', confirmEmergencyAction);
+
+            // Initialize connection monitoring
+            initializeConnectionMonitoring();
+
+            // Initialize emergency state
+            initializeEmergencyState();
+
+            // Initialize chatbot with enhanced draggable functionality
+            initializeChatbot();
+
+            // Add water drop animation to relevant elements
+            document.querySelectorAll('.water-drop').forEach(el => {
+                el.addEventListener('mouseenter', () => {
+                    el.classList.add('water-drop-animate');
+                });
+                el.addEventListener('mouseleave', () => {
+                    el.classList.remove('water-drop-animate');
+                });
+            });
+        });
+
+        // Show loading spinner
+        function showLoading() {
+            document.getElementById('loadingSpinner').classList.remove('hidden');
+        }
+
+        // Hide loading spinner
+        function hideLoading() {
+            document.getElementById('loadingSpinner').classList.add('hidden');
+        }
+
+        // Show alert message
+        function showAlert(message, type = 'success') {
+            const colors = {
+                success: { bg: 'bg-green-100', border: 'border-green-500', text: 'text-green-700', icon: 'fa-check-circle' },
+                error: { bg: 'bg-red-100', border: 'border-red-500', text: 'text-red-700', icon: 'fa-exclamation-circle' },
+                warning: { bg: 'bg-yellow-100', border: 'border-yellow-500', text: 'text-yellow-700', icon: 'fa-exclamation-triangle' },
+                info: { bg: 'bg-blue-100', border: 'border-blue-500', text: 'text-blue-700', icon: 'fa-info-circle' }
+            };
+
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg ${colors[type].bg} border-l-4 ${colors[type].border} ${colors[type].text} max-w-md z-50 transition-all duration-300 transform translate-x-0 opacity-100 card`;
+            alertDiv.innerHTML = `
+                <div class="flex items-start">
+                    <i class="fas ${colors[type].icon} mt-1 mr-3"></i>
+                    <div class="flex-1">
+                        <p class="font-medium">${message}</p>
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-gray-500 hover:text-gray-700 focus:outline-none transition-colors">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+
+            document.body.appendChild(alertDiv);
+
+            setTimeout(() => {
+                alertDiv.classList.add('opacity-0', 'translate-x-full');
+                setTimeout(() => alertDiv.remove(), 300);
+            }, 5000);
+        }
+
+        // Emergency modal functions
+        function showEmergencyModal(isEmergencyActive) {
+            updateEmergencyUI(isEmergencyActive);
+            document.getElementById('emergencyModal').classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+        }
+
+        function hideEmergencyModal() {
+            document.getElementById('emergencyModal').classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+
+        function updateEmergencyUI(isActive) {
+            const buttonElement = document.getElementById('emergencyToggleBtn');
+            const buttonTextElement = document.getElementById('emergencyButtonText');
+            const mobileButtonElement = document.getElementById('mobileEmergencyToggleBtn');
+            const mobileButtonTextElement = document.getElementById('mobileEmergencyButtonText');
+            const emergencyBanner = document.getElementById('emergencyBanner');
+            const modalTitle = document.getElementById('emergencyModalTitle');
+            const modalMessage = document.getElementById('emergencyModalMessage');
+            const confirmBtn = document.getElementById('emergencyConfirmBtn');
+
+            if (isActive) {
+                // Update buttons
+                if (buttonTextElement) buttonTextElement.textContent = 'RESET';
+                if (buttonElement) {
+                    buttonElement.classList.remove('bg-red-600', 'hover:bg-red-700');
+                    buttonElement.classList.add('bg-green-600', 'hover:bg-green-700', 'emergency-pulse');
+                }
+
+                if (mobileButtonTextElement) mobileButtonTextElement.textContent = 'Reset Emergency';
+                if (mobileButtonElement) {
+                    mobileButtonElement.classList.remove('bg-red-600', 'hover:bg-red-700');
+                    mobileButtonElement.classList.add('bg-green-600', 'hover:bg-green-700', 'emergency-pulse');
+                }
+
+                // Update modal
+                modalTitle.textContent = 'Reset Emergency Stop';
+                modalMessage.textContent = 'This will restore normal irrigation system operations.';
+                confirmBtn.textContent = 'Confirm Reset';
+                confirmBtn.classList.remove('bg-red-600', 'hover:bg-red-700', 'focus:ring-red-500');
+                confirmBtn.classList.add('bg-green-600', 'hover:bg-green-700', 'focus:ring-green-500');
+
+                // Show banner
+                if (emergencyBanner) emergencyBanner.classList.remove('hidden');
+            } else {
+                // Update buttons
+                if (buttonTextElement) buttonTextElement.textContent = 'EMERGENCY';
+                if (buttonElement) {
+                    buttonElement.classList.remove('bg-green-600', 'hover:bg-green-700', 'emergency-pulse');
+                    buttonElement.classList.add('bg-red-600', 'hover:bg-red-700');
+                }
+
+                if (mobileButtonTextElement) mobileButtonTextElement.textContent = 'Emergency Stop';
+                if (mobileButtonElement) {
+                    mobileButtonElement.classList.remove('bg-green-600', 'hover:bg-green-700', 'emergency-pulse');
+                    mobileButtonElement.classList.add('bg-red-600', 'hover:bg-red-700');
+                }
+
+                // Update modal
+                modalTitle.textContent = 'Activate Emergency Stop';
+                modalMessage.textContent = 'This will immediately shut down all irrigation systems. Only use in case of emergency!';
+                confirmBtn.textContent = 'Confirm Emergency Stop';
+                confirmBtn.classList.remove('bg-green-600', 'hover:bg-green-700', 'focus:ring-green-500');
+                confirmBtn.classList.add('bg-red-600', 'hover:bg-red-700', 'focus:ring-red-500');
+
+                // Hide banner
+                if (emergencyBanner) emergencyBanner.classList.add('hidden');
+            }
+        }
+
+        // Confirm emergency action
+        function confirmEmergencyAction() {
+            const isEmergencyActive = document.getElementById('emergencyModalTitle').textContent.includes('Reset');
+            const button = document.getElementById('emergencyConfirmBtn');
+            const originalText = button.innerHTML;
+
+            showLoading();
+            button.disabled = true;
+
+            const action = isEmergencyActive ? 'reset_emergency' : 'emergency_stop';
+            const successMessage = isEmergencyActive ? 'Emergency reset successfully' : 'Emergency stop activated';
+
+            fetch('/api/control/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ action: action })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => {
+                        throw new Error(err.error || 'Request failed');
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                updateEmergencyUI(!isEmergencyActive);
+                showAlert(successMessage, 'success');
+                hideEmergencyModal();
+            })
+            .catch(error => {
+                showAlert(`Failed to ${action.replace('_', ' ')}: ${error.message}`, 'error');
+                console.error('Error:', error);
+            })
+            .finally(() => {
+                hideLoading();
+                button.innerHTML = originalText;
+                button.disabled = false;
+            });
+        }
+
+        // Initialize emergency state from server
+        async function initializeEmergencyState() {
+            try {
+                const response = await fetch('/api/control/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({ action: 'get_state' })
+                });
+
+                if (!response.ok) throw new Error('Failed to get system state');
+
+                const data = await response.json();
+                updateEmergencyUI(data.emergency);
+
+            } catch (error) {
+                console.error('Error initializing state:', error);
+                // Fall back to template value if API fails
+                updateEmergencyUI({% if emergency_active %}true{% else %}false{% endif %});
+            }
+        }
+
+        // Connection monitoring
+        function initializeConnectionMonitoring() {
+            const statusDot = document.getElementById('connectionStatusDot');
+            const statusText = document.getElementById('connectionStatusText');
+            const disconnectBtn = document.getElementById('disconnectBtn');
+
+            if (!statusDot || !statusText) return;
+
+            async function checkConnection() {
+                try {
+                    const response = await fetch('/api/control/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        },
+                        body: JSON.stringify({ action: 'get_state' })
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        updateConnectionStatus(data.connected, data.last_seen);
+                    } else {
+                        updateConnectionStatus(false);
+                    }
+                } catch (error) {
+                    updateConnectionStatus(false);
+                }
+            }
+
+            function updateConnectionStatus(isConnected, lastSeen) {
+                if (isConnected) {
+                    statusDot.className = 'h-3 w-3 rounded-full bg-green-500 animate-pulse';
+                    statusText.textContent = `Online ${lastSeen ? '(Last: ' + formatTime(lastSeen) + ')' : ''}`;
+                    if (disconnectBtn) disconnectBtn.classList.remove('hidden');
+                } else {
+                    statusDot.className = 'h-3 w-3 rounded-full bg-red-500';
+                    statusText.textContent = 'Offline';
+                    if (disconnectBtn) disconnectBtn.classList.add('hidden');
+                }
+            }
+
+            function formatTime(timestamp) {
+                if (!timestamp) return '';
+                const date = new Date(timestamp);
+                return date.toLocaleTimeString();
+            }
+
+            // Initial check
+            checkConnection();
+
+            // Periodic checks every 5 seconds
+            setInterval(checkConnection, 5000);
+
+            // Setup disconnect button if exists
+            if (disconnectBtn) {
+                disconnectBtn.addEventListener('click', async function() {
+                    showLoading();
+                    try {
+                        const response = await fetch('/api/control/', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': '{{ csrf_token }}'
+                            },
+                            body: JSON.stringify({ action: 'disconnect' })
+                        });
+
+                        if (response.ok) {
+                            showAlert('Device disconnected successfully', 'success');
+                            updateConnectionStatus(false);
+                        } else {
+                            throw new Error('Failed to disconnect');
+                        }
+                    } catch (error) {
+                        showAlert('Failed to disconnect device: ' + error.message, 'error');
+                    } finally {
+                        hideLoading();
+                    }
+                });
+            }
+        }
+
+        // Enhanced Chatbot functionality with improved draggable feature
+        function initializeChatbot() {
+            // Chatbot elements
+            const chatButton = document.getElementById('chatbot-toggle');
+            const chatContainer = document.getElementById('chatbot-container');
+            const chatForm = document.getElementById('chatbot-form');
+            const chatInput = document.getElementById('chatbot-query');
+            const chatHistory = document.getElementById('chatbot-history');
+            const closeButton = document.getElementById('chatbot-close');
+            const dragHandle = document.getElementById('chatbot-drag-handle');
+
+            // Draggable functionality variables
+            let isDragging = false;
+            let offsetX, offsetY;
+            let startX, startY;
+            let posX = 0, posY = 0;
+            let touchStartTime = 0;
+
+            // Get CSRF token
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+            const csrftoken = getCookie('csrftoken');
+
+            // Load chat history from localStorage
+            function loadChatHistory() {
+                const savedHistory = localStorage.getItem('chatHistory');
+                if (savedHistory) {
+                    chatHistory.innerHTML = savedHistory;
+                    scrollToBottom();
+                }
+            }
+
+            // Save chat to localStorage
+            function saveChat() {
+                localStorage.setItem('chatHistory', chatHistory.innerHTML);
+            }
+
+            // Scroll to bottom of chat
+            function scrollToBottom() {
+                chatHistory.scrollTop = chatHistory.scrollHeight;
+            }
+
+            // Add message to chat
+            function addMessage(content, isUser = false, isError = false) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = isUser ? 'user-msg' : isError ? 'bot-msg error' : 'bot-msg';
+
+                const now = new Date();
+                const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                messageDiv.innerHTML = `
+                    <div class="message-content">${content}</div>
+                    <div class="message-time">${timeString}</div>
+                `;
+
+                chatHistory.appendChild(messageDiv);
+                scrollToBottom();
+                saveChat();
+            }
+
+            // Toggle chatbot visibility
+            function toggleChat() {
+                chatContainer.classList.toggle('chatbot-visible');
+                if (chatContainer.classList.contains('chatbot-visible')) {
+                    chatInput.focus();
+                    // Hide notification badge when chat is opened
+                    document.getElementById('chat-notification').style.display = 'none';
+                }
+            }
+
+            // Handle form submission
+            async function handleSubmit(e) {
+                e.preventDefault();
+                const query = chatInput.value.trim();
+                if (!query) return;
+
+                // Add user message
+                addMessage(query, true);
+                chatInput.value = '';
+
+                try {
+                    const response = await fetch("/irrigation/chatbot/", {
+                        method: "POST",
+                        headers: {
+                            "X-CSRFToken": csrftoken,
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ query: query })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+
+                    const data = await response.json();
+                    processBotResponse(data);
+
+                } catch (error) {
+                    console.error('Error:', error);
+                    addMessage("Sorry, I'm having trouble connecting. Please try again later.", false, true);
+                }
+            }
+
+            // Process bot response
+            function processBotResponse(data) {
+                if (data.matched) {
+                    let responseContent = '';
+
+                    // Handle different response types
+                    switch(data.type) {
+                        case 'route':
+                            responseContent = `
+                                <div class="flex items-center mb-2">
+                                    <i class="fas ${data.resource.icon} mr-2 text-green-600"></i>
+                                    <strong>${data.resource.name}</strong>
+                                </div>
+                                <p class="mb-2">${data.resource.description}</p>
+                                <a href="${data.resource.url}" class="text-green-600 hover:underline" target="_blank">
+                                    Go to page <i class="fas fa-arrow-right ml-1"></i>
+                                </a>
+                            `;
+                            break;
+
+                        case 'command':
+                            responseContent = `
+                                <div class="flex items-center mb-2">
+                                    <i class="fas ${data.resource.icon} mr-2 text-green-600"></i>
+                                    <strong>${data.resource.name}</strong>
+                                </div>
+                                <p class="mb-3">${data.resource.description}</p>
+                                ${data.resource.safety_warning ?
+                                    `<div class="bg-red-50 border-l-4 border-red-500 p-3 mb-3">
+                                        <strong class="text-red-700">⚠️ Warning:</strong> ${data.resource.safety_warning}
+                                    </div>` : ''
+                                }
+                                <div class="bg-gray-50 p-3 rounded-md mb-3">
+                                    <h4 class="font-medium text-sm mb-2">Usage Examples:</h4>
+                                    <ul class="list-disc pl-5 space-y-1 text-sm">
+                                        ${data.resource.examples.map(ex => `<li>${ex}</li>`).join('')}
+                                    </ul>
+                                </div>
+                            `;
+                            break;
+
+                        default:
+                            responseContent = data.resource.description || "I found some information for you.";
+                    }
+
+                    addMessage(responseContent);
+
+                    // Add suggestions if available
+                    if (data.suggestions && data.suggestions.length > 0) {
+                        const suggestionsDiv = document.createElement('div');
+                        suggestionsDiv.className = 'suggestions mt-3 space-y-2';
+
+                        data.suggestions.forEach(suggestion => {
+                            const button = document.createElement('button');
+                            button.className = 'suggestion-chip bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full text-sm transition-colors';
+                            button.textContent = suggestion.name;
+                            button.onclick = () => {
+                                chatInput.value = suggestion.name;
+                                chatForm.dispatchEvent(new Event('submit', { cancelable: true }));
+                            };
+                            suggestionsDiv.appendChild(button);
+                        });
+
+                        chatHistory.appendChild(suggestionsDiv);
+                        scrollToBottom();
+                    }
+                } else {
+                    // No match found
+                    let responseContent = `
+                        <p>${data.message || "I couldn't find an exact match for your query."}</p>
+                    `;
+
+                    addMessage(responseContent);
+
+                    // Show suggestions
+                    if (data.suggestions && data.suggestions.length > 0) {
+                        const suggestionsDiv = document.createElement('div');
+                        suggestionsDiv.className = 'suggestions mt-3 space-y-2';
+
+                        data.suggestions.forEach(suggestion => {
+                            const button = document.createElement('button');
+                            button.className = 'suggestion-chip bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full text-sm transition-colors';
+                            button.textContent = suggestion.name;
+                            button.onclick = () => {
+                                chatInput.value = suggestion.name;
+                                chatForm.dispatchEvent(new Event('submit', { cancelable: true }));
+                            };
+                            suggestionsDiv.appendChild(button);
+                        });
+
+                        chatHistory.appendChild(suggestionsDiv);
+                        scrollToBottom();
+                    }
+                }
+            }
+
+            // Enhanced Draggable functionality
+            function setupDraggable() {
+                dragHandle.addEventListener('mousedown', startDrag);
+                dragHandle.addEventListener('touchstart', startDrag, { passive: false });
+
+                function startDrag(e) {
+                    e.preventDefault();
+                    isDragging = true;
+                    touchStartTime = Date.now();
+
+                    // Get initial position
+                    const rect = chatContainer.getBoundingClientRect();
+
+                    if (e.type === 'mousedown') {
+                        offsetX = e.clientX - rect.left;
+                        offsetY = e.clientY - rect.top;
+                        startX = e.clientX;
+                        startY = e.clientY;
+                    } else if (e.type === 'touchstart') {
+                        offsetX = e.touches[0].clientX - rect.left;
+                        offsetY = e.touches[0].clientY - rect.top;
+                        startX = e.touches[0].clientX;
+                        startY = e.touches[0].clientY;
+                    }
+
+                    // Add event listeners for moving and stopping
+                    document.addEventListener('mousemove', drag);
+                    document.addEventListener('touchmove', drag, { passive: false });
+                    document.addEventListener('mouseup', stopDrag);
+                    document.addEventListener('touchend', stopDrag);
+
+                    // Add active class for visual feedback
+                    chatContainer.classList.add('shadow-lg', 'ring-2', 'ring-green-500');
+                }
+
+                function drag(e) {
+                    if (!isDragging) return;
+                    e.preventDefault();
+
+                    let clientX, clientY;
+
+                    if (e.type === 'mousemove') {
+                        clientX = e.clientX;
+                        clientY = e.clientY;
+                    } else if (e.type === 'touchmove') {
+                        clientX = e.touches[0].clientX;
+                        clientY = e.touches[0].clientY;
+                    }
+
+                    // Calculate new position
+                    let newLeft = clientX - offsetX;
+                    let newTop = clientY - offsetY;
+
+                    // Constrain to viewport
+                    const containerWidth = chatContainer.offsetWidth;
+                    const containerHeight = chatContainer.offsetHeight;
+                    const viewportWidth = window.innerWidth;
+                    const viewportHeight = window.innerHeight;
+
+                    newLeft = Math.max(0, Math.min(viewportWidth - containerWidth, newLeft));
+                    newTop = Math.max(0, Math.min(viewportHeight - containerHeight, newTop));
+
+                    // Apply new position
+                    chatContainer.style.left = `${newLeft}px`;
+                    chatContainer.style.top = `${newTop}px`;
+                    chatContainer.style.right = 'auto';
+                    chatContainer.style.bottom = 'auto';
+                }
+
+                function stopDrag(e) {
+                    if (!isDragging) return;
+
+                    // Check if this was a click (very small movement or short time)
+                    let endX, endY;
+                    if (e.type === 'mouseup') {
+                        endX = e.clientX;
+                        endY = e.clientY;
+                    } else if (e.type === 'touchend') {
+                        if (e.changedTouches.length > 0) {
+                            endX = e.changedTouches[0].clientX;
+                            endY = e.changedTouches[0].clientY;
+                        }
+                    }
+
+                    const distance = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+                    const duration = Date.now() - touchStartTime;
+
+                    if (distance < 5 || duration < 200) {
+                        // Treat as click - focus input
+                        chatInput.focus();
+                    }
+
+                    // Clean up
+                    isDragging = false;
+                    document.removeEventListener('mousemove', drag);
+                    document.removeEventListener('touchmove', drag);
+                    document.removeEventListener('mouseup', stopDrag);
+                    document.removeEventListener('touchend', stopDrag);
+
+                    // Remove active class
+                    chatContainer.classList.remove('shadow-lg', 'ring-2', 'ring-green-500');
+                }
+            }
+
+            // Initialize chatbot
+            function initChatbot() {
+                // Load any saved history
+                loadChatHistory();
+
+                // Event listeners
+                chatButton.addEventListener('click', toggleChat);
+                closeButton.addEventListener('click', toggleChat);
+                chatForm.addEventListener('submit', handleSubmit);
+
+                // Send message on Enter key (but allow Shift+Enter for new lines)
+                chatInput.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        chatForm.dispatchEvent(new Event('submit'));
+                    }
+                });
+
+                // Initial greeting if no history
+                if (chatHistory.children.length === 0) {
+                    addMessage("Hello! I'm your irrigation assistant. How can I help you today?", false);
+                }
+
+                // Close chat when clicking outside (but not when dragging)
+                document.addEventListener('click', function(e) {
+                    if (!isDragging && !chatContainer.contains(e.target) && e.target !== chatButton && chatContainer.classList.contains('chatbot-visible')) {
+                        toggleChat();
+                    }
+                });
+
+                // Setup draggable functionality
+                setupDraggable();
+            }
+
+            // Start the chatbot
+            initChatbot();
+        }
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
