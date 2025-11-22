@@ -48,7 +48,7 @@ else:
     DEBUG = debug_env.lower() == 'true'
 
 ALLOWED_HOSTS = [
-    'irrigation-intelligent.onrender.com',
+    'smart-irrigation-project-v0n9.onrender.com',
     'localhost',
     '127.0.0.1',
     '192.168.43.177',
