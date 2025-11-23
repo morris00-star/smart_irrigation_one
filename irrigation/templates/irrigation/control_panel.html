@@ -2,7 +2,7 @@
 {% block title %}Control Panel{% endblock %}
 
 {% block content %}
-<div class="min-h-screen bg-gray-100">
+<div class="min-h-screen bg-green-100">
     <!-- Header Section -->
     <header class="bg-green-600 text-white shadow">
         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
@@ -163,43 +163,69 @@
                 </div>
 
                 <!-- Schedule Irrigation Card -->
-                <div class="bg-white shadow rounded-lg p-6" id="scheduling-card">
+                <div class="bg-green shadow rounded-lg p-6" id="scheduling-card">
                     <h2 class="text-xl font-bold mb-6 text-gray-900">Schedule Irrigation</h2>
+
                     <div id="scheduling-disabled-message" class="text-red-700 hidden scheduling-disabled-message">
                         Scheduling is only available in manual mode when no emergency is active
                     </div>
+
                     <div class="space-y-4" id="scheduling-form">
+
+                        <!-- Date Input -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Date</label>
                             <input type="date" id="schedule-date"
-                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200"
-                                   min="{{ now|date:'Y-m-d' }}">
+                                   class="w-full rounded-md border-yellow-700 shadow-sm
+                                          placeholder-gray-500 text-gray-900 p-2
+                                          focus:border-green-500 focus:ring focus:ring-green-200"
+                                   min="{{ now|date:'Y-m-d' }}"
+                                   placeholder="Select irrigation date">
                             <p class="mt-1 text-xs text-red-600 hidden" id="date-error">Please select a valid date</p>
                         </div>
+
+                        <!-- Time Input -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Time</label>
                             <input type="time" id="schedule-time"
-                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200">
+                                   class="w-full rounded-md border-yellow-700 shadow-sm
+                                          placeholder-gray-500 text-gray-900 p-2
+                                          focus:border-green-500 focus:ring focus:ring-green-200"
+                                   placeholder="Select irrigation time">
                             <p class="mt-1 text-xs text-red-600 hidden" id="time-error">Please select a valid time</p>
                         </div>
+
+                        <!-- Duration Input -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Duration (minutes)</label>
                             <input type="number" id="schedule-duration" min="1" max="120" value="15"
-                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200">
+                                   class="w-full rounded-md border-yellow-700 shadow-sm
+                                          placeholder-gray-500 text-gray-900 p-2
+                                          focus:border-green-500 focus:ring focus:ring-green-200"
+                                   placeholder="Enter watering duration (1–120 min)">
                             <p class="mt-1 text-xs text-red-600 hidden" id="duration-error">Duration must be between 1-120 minutes</p>
                         </div>
+
+                        <!-- Upcoming Events -->
                         <div id="scheduled-events" class="hidden">
                             <h3 class="text-sm font-medium text-gray-700 mb-2">Upcoming Scheduled Events</h3>
                             <div id="events-list" class="space-y-2"></div>
                         </div>
-                        <button id="schedule-irrigation" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md transition-colors flex items-center justify-center">
+
+                        <!-- Button -->
+                        <button id="schedule-irrigation"
+                                class="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md
+                                       transition-colors flex items-center justify-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                             Schedule Irrigation
                         </button>
+
                     </div>
                 </div>
+
             </div>
 
             <!-- Right Column - Monitoring -->
